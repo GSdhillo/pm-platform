@@ -1,7 +1,7 @@
 package com.gurjeet.pm.adapter.in.websocket;
 
 import com.gurjeet.pm.adapter.out.persistence.DomainEventRepository;
-import com.gurjeet.pm.application.OutboxDispatcher;
+import com.gurjeet.pm.application.EventMessageMapper;
 import com.gurjeet.pm.application.PresenceService;
 import com.gurjeet.pm.common.security.AuthUser;
 import com.gurjeet.pm.domain.model.DomainEvent;
@@ -31,15 +31,15 @@ public class BoardWebSocketHandler extends TextWebSocketHandler implements Board
 
     private final Map<UUID, Set<WebSocketSession>> sessionsByProject = new ConcurrentHashMap<>();
     private final DomainEventRepository eventRepository;
-    private final OutboxDispatcher outboxDispatcher;
+    private final EventMessageMapper messageMapper;
     private final PresenceService presenceService;
 
     public BoardWebSocketHandler(DomainEventRepository eventRepository,
-                                 OutboxDispatcher outboxDispatcher,
+                                 EventMessageMapper messageMapper,
                                  PresenceService presenceService,
                                  MeterRegistry meterRegistry) {
         this.eventRepository = eventRepository;
-        this.outboxDispatcher = outboxDispatcher;
+        this.messageMapper = messageMapper;
         this.presenceService = presenceService;
         Gauge.builder("ws.connections", sessionsByProject,
                         map -> map.values().stream().mapToInt(Set::size).sum())
@@ -63,7 +63,7 @@ public class BoardWebSocketHandler extends TextWebSocketHandler implements Board
             List<DomainEvent> missed = eventRepository
                     .findByProjectIdAndProjectSeqGreaterThanOrderByProjectSeqAsc(projectId, lastSeq);
             for (DomainEvent event : missed) {
-                session.sendMessage(new TextMessage(outboxDispatcher.toWsMessage(event)));
+                session.sendMessage(new TextMessage(messageMapper.toWsMessage(event)));
             }
             log.info("Replayed {} missed events to user {} (after seq {})", missed.size(), user.id(), lastSeq);
         }

@@ -20,6 +20,7 @@ com\gurjeet\pm\domain\model\IssueWatcher.class
 com\gurjeet\pm\domain\model\DomainEvent.class
 com\gurjeet\pm\adapter\in\rest\dto\CommentDtos.class
 com\gurjeet\pm\adapter\out\persistence\CustomFieldValueRepository.class
+com\gurjeet\pm\application\EventMessageMapper.class
 com\gurjeet\pm\domain\model\Notification.class
 com\gurjeet\pm\adapter\in\rest\dto\AuthDtos$LoginRequest.class
 com\gurjeet\pm\adapter\out\persistence\ProjectRepository.class
