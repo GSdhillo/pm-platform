@@ -33,6 +33,7 @@ spring:
 
 server:
   shutdown: graceful
+  forward-headers-strategy: framework
   port: 8080
 
 management:
